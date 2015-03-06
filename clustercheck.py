@@ -69,6 +69,12 @@ class clustercheck(BaseHTTPServer.BaseHTTPRequestHandler):
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
                 self.wfile.write("Percona XtraDB Cluster Node state could not be retrieved.")
+            elif opts.disable_when_ro and opts.is_ro:
+                opts.last_query_result = res[0]['Value']
+                self.send_response(503)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write("Percona XtraDB Cluster Node is in read-only mode.")
 
             elif res[0]['Value'] == '4' or (int(opts.available_when_donor) == 1 and res[0]['Value'] == '2'):
                 opts.last_query_result = res[0]['Value']
